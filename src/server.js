@@ -22,11 +22,15 @@ const server = http.createServer(app);
 // 웹 소켓 서버 생성
 const wss = new Websocket.Server({ server });
 
-function handleConnection(socket) {
-  console.log(socket);
-}
 // 웹소켓 연결
-wss.on("connection", handleConnection);
+wss.on("connection", (socket) => {
+  console.log("Connected Browser..!");
+  socket.on("close", () => console.log("Disconnected Browser..!"));
+  socket.on("message", (message) => {
+    console.log(message.toString());
+  });
+  socket.send("hello! browser!!");
+});
 
 // http 서버와 wss 서버 둘 다 사용 가능
 server.listen(3000);
