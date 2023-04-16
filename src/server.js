@@ -22,12 +22,18 @@ const server = http.createServer(app);
 // 웹 소켓 서버 생성
 const wss = new Websocket.Server({ server });
 
+const sockets = [];
+
 // 웹소켓 연결
 wss.on("connection", (socket) => {
+  // 새로운 소켓이 생성되어 연결되므로 브라우저들끼리 소통 불가
+  // 각 생성되는 소켓들을 배열에 저장
+  sockets.push(socket);
   console.log("Connected Browser..!");
   socket.on("close", () => console.log("Disconnected Browser..!"));
   socket.on("message", (message) => {
-    console.log(message.toString());
+    // 연결된 모든 소켓들한테 메세지 전송
+    sockets.forEach((s) => s.send(message.toString()));
   });
   socket.send("hello! browser!!");
 });
